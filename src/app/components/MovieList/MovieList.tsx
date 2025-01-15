@@ -1,19 +1,39 @@
 "use client";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import "./index.scss";
 import MovieCard from "../MovieCard";
 import { Movie } from "@/app/types/movie";
+import { MovieContext } from "@/app/contexts/MovieContext";
 
 function MovieList() {
   const [movies, setMovies] = useState<Movie[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { selectedMovie, setSelectedMovie } = useContext(MovieContext);
+  const dialogRef = useRef<HTMLDialogElement | null>(null);
 
   useEffect(() => {
     getMovies();
   }, []);
-  const getMovies =  () => {
-     axios({
+  
+  useEffect(() => {
+    if (selectedMovie === undefined) return;
+    alert(selectedMovie.title);
+
+    dialogRef.current?.showModal();
+    dialogRef.current?.addEventListener("close", closeModal);
+    document.body.style.overflow = "hidden";
+    return () => {
+      dialogRef.current?.removeEventListener("close", closeModal);
+    };
+  }, [selectedMovie]);
+
+  function closeModal() {
+    dialogRef.current?.close();
+    setSelectedMovie(undefined);
+    document.body.style.overflow = "";
+  }
+  const getMovies = () => {
+    axios({
       method: "get",
       url: "https://api.themoviedb.org/3/discover/movie",
       params: {
@@ -23,20 +43,20 @@ function MovieList() {
     }).then((response) => {
       setMovies(response.data.results);
     });
-    setIsLoading(false);
+    // setIsLoading(false);
   };
-  // if (isLoading)
-  //   return (
-  //     <div className="loading-container">
-  //       <OrbitProgress color="#6046ff" size="medium" text="" textColor="" />
-  //     </div>
-  //   );
+
   return (
-    <ul className="movie-list">
-      {movies.map((movie) => (
-        <MovieCard movie={movie} key={movie.id} />
-      ))}
-    </ul>
+    <div>
+      <dialog className="modal" ref={dialogRef}>
+        Hello
+      </dialog>
+      <ul className="movie-list">
+        {movies.map((movie) => (
+          <MovieCard movie={movie} key={movie.id} />
+        ))}
+      </ul>
+    </div>
   );
 }
 

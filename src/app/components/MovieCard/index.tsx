@@ -1,8 +1,9 @@
 import { Movie } from "@/app/types/movie";
-import React from "react";
+import React, { useContext } from "react";
 import StarRating from "../StarRating";
 
 import "./index.scss";
+import { MovieContext } from "@/app/contexts/MovieContext";
 
 export interface Props {
   movie: Movie;
@@ -10,8 +11,9 @@ export interface Props {
 
 function MovieCard(props: Props) {
   const movie = props.movie;
+  const setSelectedMovie = useContext(MovieContext);
   return (
-    <li className="movie-card">
+    <li className="movie-card" onClick={() => setSelectedMovie(movie)}>
       <div className="movie-poster">
         <img
           src={`https://image.tmdb.org/t/p/original${movie.poster_path}`}
@@ -29,7 +31,12 @@ function MovieCard(props: Props) {
                 : movie.overview}
             </p>
           )}
-          <button className="btn-default">Ver mais</button>
+          <button
+            className="btn-default"
+            onClick={() => setSelectedMovie(movie)}
+          >
+            Ver mais
+          </button>
         </div>
       </div>
     </li>
