@@ -1,37 +1,27 @@
 "use client";
 import axios from "axios";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "./index.scss";
 import MovieCard from "../MovieCard";
 import { Movie } from "@/app/types/movie";
 import { MovieContext } from "@/app/contexts/MovieContext";
+import { ModalContext } from "@/app/contexts/ModalContext";
+
 
 function MovieList() {
   const [movies, setMovies] = useState<Movie[]>([]);
   const { selectedMovie, setSelectedMovie } = useContext(MovieContext);
-  const dialogRef = useRef<HTMLDialogElement | null>(null);
+  const dialogRef = useContext(ModalContext);
+
+  useEffect(() => {
+    if (selectedMovie) alert(selectedMovie.title);
+  }, [selectedMovie]);
+
 
   useEffect(() => {
     getMovies();
   }, []);
-  
-  useEffect(() => {
-    if (selectedMovie === undefined) return;
-    alert(selectedMovie.title);
 
-    dialogRef.current?.showModal();
-    dialogRef.current?.addEventListener("close", closeModal);
-    document.body.style.overflow = "hidden";
-    return () => {
-      dialogRef.current?.removeEventListener("close", closeModal);
-    };
-  }, [selectedMovie]);
-
-  function closeModal() {
-    dialogRef.current?.close();
-    setSelectedMovie(undefined);
-    document.body.style.overflow = "";
-  }
   const getMovies = () => {
     axios({
       method: "get",

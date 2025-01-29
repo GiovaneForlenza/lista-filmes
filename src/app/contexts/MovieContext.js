@@ -1,13 +1,18 @@
 "use client";
-import { createContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+import { ModalContext } from "./ModalContext";
+
+
 
 export const MovieContext = createContext();
 const MovieContextProvider = (props) => {
   const [selectedMovie, setSelectedMovie] = useState(undefined);
+  const openModal = useContext(ModalContext);
 
-  // useEffect(() => {
-  //   if (selectedMovie) setSelectedMovie(selectedMovie)
-  // }, [selectedMovie]);
+  useEffect(() => {
+    openModal(selectedMovie);
+  }, [selectedMovie]);
+
   return (
     <MovieContext.Provider value={(selectedMovie, setSelectedMovie)}>
       {props.children}
